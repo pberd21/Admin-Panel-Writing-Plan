@@ -4,9 +4,9 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.utils import executor
-import crud_functions  # импортируем функции из crud_functions.py
+import crud_functions  
 
-API_TOKEN = "YOUR_TELEGRAM_BOT_API_TOKEN"  # Убедитесь, что заменили на ваш API токен
+API_TOKEN = ""  
 bot = Bot(token=API_TOKEN)
 storage = MemoryStorage()
 dp = Dispatcher(bot, storage=storage)
@@ -29,8 +29,8 @@ inline_keyboard.add(
 
 @dp.message_handler(commands=["start"])
 async def start(message: Message):
-    crud_functions.initiate_db()  # Инициализируем БД
-    products = crud_functions.get_all_products()  # Получаем все продукты из БД
+    crud_functions.initiate_db()  
+    products = crud_functions.get_all_products()  
     if products:
         await message.reply("Продукты в базе данных загружены!")
     else:
@@ -43,7 +43,7 @@ async def main_menu(message: Message):
 
 @dp.message_handler(lambda message: message.text == "Купить")
 async def get_buying_list(message: Message):
-    products = crud_functions.get_all_products()  # Получаем список всех продуктов из БД
+    products = crud_functions.get_all_products() 
     if not products:
         await message.reply("В базе данных нет продуктов. Пожалуйста, добавьте их.")
         return
@@ -51,7 +51,6 @@ async def get_buying_list(message: Message):
     for product in products:
         title, description, price = product[1], product[2], product[3]
         await message.answer(f"Название: {title} | Описание: {description} | Цена: {price}₽")
-        # Для отображения картинок используйте реальные URL или локальные изображения
         await message.answer_photo("https://via.placeholder.com/150?text=" + title)
     
     await message.reply("Выберите продукт для покупки:", reply_markup=inline_keyboard)
